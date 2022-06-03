@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./img/paintbrush.png">
+    <title>Paint</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body{
+            width: 100%;
+            height: 100vh;
+            overflow:hidden;
+        }
+        .palitra{
+            width: auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 0 2px #999;
+            /* position: fixed;
+            bottom: 20px;
+            left: 20px; */
+            background-color: white;
+        }
+        #cursorColor{
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .colorItem{
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .red{
+            background-color: red;
+            border: 1px solid #999;
+        }
+        .green{
+            background-color: green;
+            border: 1px solid #999;
+        }
+        .blue{
+            background-color: blue;
+            border: 1px solid #999;
+        }
+  
+        .rozmir{
+            flex-direction: column;
+            width: auto;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            box-shadow: 0 0 2px #999;
+            /* position: fixed;
+            bottom: 20px;
+            left: 240px; */
+            height: 80px;
+            font-size: 20px;
+            font-weight: 600;
+
+        }
+        .bot{
+            width: auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+           
+            
+            position: fixed;
+            bottom: 20px;
+           
+           
+            
+        }
+        .palitra{
+            margin-left: 20px;
+        }
+        .set{
+            width: 40px;
+            height: 40px;
+            border: 3px solid white;
+            position: fixed;
+           cursor: pointer;
+            top: 10px;
+            right: 10px;
+        }
+        .set__box{
+            width: 60%;
+            height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: fixed;
+            left: 20%;
+            top: 25vh;
+            font-size: 10px;
+         
+           box-shadow: 0 0 5px #999;
+            background-color: white;
+        }
+        .h1__set{
+            font-size: 40px;
+         
+
+        }
+        .shrepl{
+            font-size: 12px;
+        }
+        input{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="bot" id="bot">
+        <div class="palitra" id="penzl">
+            <img src="./img/paintbrush.png" class="colorItem" alt="">
+        </div>
+        <div class="palitra" id="eraser">
+            <img src="./img/eraser.png" class="colorItem" alt="">
+        </div>
+        <div class="palitra" id="filler">
+            <img src="./img/fill.png" class="colorItem" alt="">
+        </div>
+    <div class="palitra" id="palitra">
+        <div class="colorItem red " id="red"></div>
+        <div class="colorItem green " id="green"></div>
+        <div class="colorItem blue " id="blue"></div>
+        <input type="color" id="cursorColor">
+
+    </div>
+    <div class="rozmir palitra" id="rozmir">
+        Розмір пензля
+    <input type="range" id="range"min="1" max="10" value="5"></div>
+    <div class="rozmir palitra shrepl" id="shrepl">
+        Швидкість відтворення
+    <input type="range" id="shinp"min="1" max="50" value="10"></div></div>
+    <img class="set" id="set" src="./img/settings.png"></img>
+    <div class="set__box" id="set__box">
+        <h1 class="h1__set">Settings</h1>
+        <h1>Зберегти - S</h1>
+        <h1>Очисти - C</h1>
+        <h1>Повне очищення - Backspace</h1>
+        <h1>Відтворити - R</h1>
+        <h1>Відкрити і закрити пензель - 1</h1>
+        <h1>Відкрити і закрити гумку - 2</h1>
+        <h1>Відкрити і закрити заливку - 3</h1>
+        <h1>Відкрити і закрити кольори - 4</h1>
+        <h1>Відкрити і закрити розмір пензля - 5</h1>
+        <h1>Відкрити і закрити швидкість відтворення - 6</h1>
+    </div>
+    <script>
+ let canv = document.getElementById('canvas')
+ let ctx =canv.getContext('2d')
+
+ let col ='black'
+ let linewidth = 5;
+ let isMouseDown =false
+ let cords=JSON.parse(localStorage.getItem('cords')) || []
+ console.log(cords)
+let bgcol ='white'
+canv.style.backgroundColor = bgcol
+ canv.width =window.innerWidth
+ canv.height = window.innerHeight;
+ let seti=0;
+ let drawi=1; 
+ let filli=0;
+ let coldosturan=col
+ canv.addEventListener('mousedown' , function(){
+     isMouseDown =true
+     console.log(isMouseDown)
+     if(seti==1){
+        seti=0
+    set__box.style.display = 'none'
+    canvas.style.filter = 'blur(0px)'
+    bot.style.filter = 'blur(0px)'
+    }
+ })
+ canv.addEventListener('mouseup' , function(){
+     isMouseDown =false
+     console.log(isMouseDown)
+     ctx.beginPath()
+     cords.push('mouseup')
+ })
+
+ ctx.lineWidth =linewidth*2
+ ctx.strokeStyle =col
+ ctx.fillStyle =col
+ let currentMassive=-1
+canv.addEventListener('mousemove',function(e){
+    if(isMouseDown && drawi==1){
+        currentMassive++;
+       
+      cords.push([e.clientX, e.clientY,col,linewidth,repl,bgcol])
+      console.log(cords)
+      ctx.lineTo(e.clientX,e.clientY)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(e.clientX,e.clientY,linewidth,0,Math.PI*2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(e.clientX,e.clientY)
+      
+    }else{
+      
+    }
+})
+canv.addEventListener('mousedown',function(e){
+    if(isMouseDown && drawi==1){
+        currentMassive++;
+        linewidth = range.value
+    ctx.lineWidth =linewidth*2
+        cords.push([e.clientX, e.clientY,col,linewidth,repl,bgcol])
+      console.log(cords)
+      ctx.lineTo(e.clientX,e.clientY)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(e.clientX,e.clientY,linewidth,0,Math.PI*2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(e.clientX,e.clientY)
+      
+    }
+})
+function clear(){
+    bgcol='white'
+    canv.style.backgroundColor=bgcol
+        palitra.style.backgroundColor=bgcol
+        penzl.style.backgroundColor=bgcol
+        eraser.style.backgroundColor=bgcol
+        filler.style.backgroundColor=bgcol
+        rozmir.style.backgroundColor=bgcol
+        shrepl.style.backgroundColor=bgcol
+    ctx.clearRect(0,0,canv.width,canv.height)
+    ctx.beginPath()
+    ctx.strokeStyle =col
+ ctx.fillStyle =col
+//  localStorage.setItem('cords',JSON.stringify([]))
+//  cords=[]
+}
+function save(){
+    localStorage.setItem('cords',JSON.stringify(cords))
+}
+let repl=10;
+let masuvi=0;
+let vvidtvrepl=0
+function replay(){
+    let timer= setInterval(function(){
+    if(vvidtvrepl==cords.length){
+        drawi=1
+        masuvi=0
+        vvidtvrepl=0
+        clearInterval(timer)
+        ctx.beginPath()
+        return;
+    }
+
+    let crd =cords.shift()
+    
+    let e={
+        clientX: crd['0'],
+        clientY: crd['1'],
+        frontcolor: crd['2'],
+        linew:crd['3'],
+        backgroundcolor:crd['5']
+    }
+    cords.push(crd)
+    vvidtvrepl++
+if(e.clientY){
+    
+}else{
+    alert('n0')
+}
+    drawi=0
+    ctx.lineWidth =e.linew*2
+    ctx.strokeStyle =e.frontcolor
+ ctx.fillStyle =e.frontcolor
+ 
+ canv.style.backgroundColor=e.backgroundcolor
+        palitra.style.backgroundColor=e.backgroundcolor
+        penzl.style.backgroundColor=e.backgroundcolor
+        eraser.style.backgroundColor=e.backgroundcolor
+        filler.style.backgroundColor=e.backgroundcolor
+        rozmir.style.backgroundColor=e.backgroundcolor
+        shrepl.style.backgroundColor=e.backgroundcolor
+    // linewidth =cords[masuvi] 
+    // ctx.lineWidth =cords[masuvi]
+    ctx.lineTo(e.clientX, e.clientY)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.arc(e.clientX,e.clientY,e.linew,0,Math.PI*2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(e.clientX,e.clientY)
+    },repl)
+  
+}
+let c1=1;
+let c2=1;
+let c3=1
+let c4=1;
+let c5=1;
+let c6=1
+document.addEventListener('keydown',function(e){
+    console.log(e.keyCode)
+    if(e.keyCode==67){
+        clear()
+    }else if(e.keyCode==83){
+        save()
+    }else if(e.keyCode==82){
+        cords =JSON.parse(localStorage.getItem('cords'))
+        clear()
+        replay()
+    }else if(e.keyCode==52){
+        if(c1==1){
+            palitra.style.display= 'none'
+            c1=0;
+        }else{
+            palitra.style.display= 'flex'
+            c1=1
+        }
+        
+    }else if(e.keyCode==53){
+        if(c2==1){
+            rozmir.style.display= 'none'
+            c2=0;
+        }else{
+            rozmir.style.display= 'flex'
+            c2=1
+        }
+        
+    }else if(e.keyCode==54){
+        if(c3==1){
+            shrepl.style.display= 'none'
+            c3=0;
+        }else{
+            shrepl.style.display= 'flex'
+            c3=1
+        }
+    }else if(e.keyCode==49){
+        if(c4==1){
+            penzl.style.display= 'none'
+            c4=0;
+        }else{
+            penzl.style.display= 'flex'
+            c4=1
+        }
+        
+    }else if(e.keyCode==50){
+        if(c5==1){
+            eraser.style.display= 'none'
+            c5=0;
+        }else{
+            eraser.style.display= 'flex'
+            c5=1
+        }
+    }else if(e.keyCode==51){
+        if(c6==1){
+            filler.style.display= 'none'
+            c6=0;
+        }else{
+            filler.style.display= 'flex'
+            c6=1
+        }
+    }else if(e.keyCode==8){
+        localStorage.setItem('cords',JSON.stringify([]))
+ cords=[]
+ bgcol='white'
+    canv.style.backgroundColor=bgcol
+        palitra.style.backgroundColor=bgcol
+        penzl.style.backgroundColor=bgcol
+        eraser.style.backgroundColor=bgcol
+        filler.style.backgroundColor=bgcol
+        rozmir.style.backgroundColor=bgcol
+        shrepl.style.backgroundColor=bgcol
+    ctx.clearRect(0,0,canv.width,canv.height)
+    ctx.beginPath()
+    ctx.strokeStyle =col
+ ctx.fillStyle =col
+    }
+})
+cursorColor.oninput =function(){
+    col= cursorColor.value
+    ctx.strokeStyle =col
+ ctx.fillStyle =col
+
+ coldosturan=col
+}
+red.onclick = function(){
+    col= 'red'
+    ctx.strokeStyle =col
+ ctx.fillStyle =col  
+
+ coldosturan=col
+}
+green.onclick = function(){
+    col= 'green'
+    ctx.strokeStyle =col
+ ctx.fillStyle =col  
+ 
+ coldosturan=col
+}
+blue.onclick = function(){
+    col= 'blue'
+    ctx.strokeStyle =col
+ ctx.fillStyle =col  
+
+ coldosturan=col
+}
+range.onchange = function(){
+    linewidth = range.value
+    ctx.lineWidth =linewidth*2
+   
+}
+shinp.onchange = function(){
+    repl=shinp.value
+   
+}
+set__box.style.display = 'none'
+set.onclick= function(){
+if(seti==0){
+    seti=1;
+    set__box.style.display = 'flex'
+    canvas.style.filter = 'blur(5px)'
+    bot.style.filter = 'blur(5px)'
+}else{
+    seti=0
+    set__box.style.display = 'none'
+    canvas.style.filter = 'blur(0px)'
+    bot.style.filter = 'blur(0px)'
+}
+}
+penzl.onclick = function(){
+    drawi=1;
+    filli=0;
+    col=coldosturan
+    ctx.strokeStyle =col
+ ctx.fillStyle =col 
+ 
+}
+
+eraser.onclick = function(){
+    filli=0;
+    coldosturan=col
+    col='white'
+    ctx.strokeStyle =col
+ ctx.fillStyle =col
+}
+filler.onclick = function(){
+    filli=1;
+}
+canv.onclick =  function(){
+    if(filli==1){
+        console.log(coldosturan)
+        col=coldosturan
+        bgcol=col
+        canv.style.backgroundColor=bgcol
+        palitra.style.backgroundColor=bgcol
+        penzl.style.backgroundColor=bgcol
+        eraser.style.backgroundColor=bgcol
+        filler.style.backgroundColor=bgcol
+        rozmir.style.backgroundColor=bgcol
+        shrepl.style.backgroundColor=bgcol
+//    filli=0;
+    }
+}
+    </script>
+</body>
+</html>
