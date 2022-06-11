@@ -24,7 +24,7 @@
             justify-content: space-around;
             align-items: center;
             padding: 20px;
-            box-shadow: 0 0 2px #999;
+            box-shadow: 0 0 5px #999;
             /* position: fixed;
             bottom: 20px;
             left: 20px; */
@@ -62,7 +62,7 @@
             display: flex;
             justify-content: space-around;
             padding: 20px;
-            box-shadow: 0 0 2px #999;
+        
             /* position: fixed;
             bottom: 20px;
             left: 240px; */
@@ -111,6 +111,7 @@
          
            box-shadow: 0 0 5px #999;
             background-color: white;
+            
         }
         .h1__set{
             font-size: 40px;
@@ -168,11 +169,41 @@
  let canv = document.getElementById('canvas')
  let ctx =canv.getContext('2d')
 
+ cursorColor.style.boxShadow ='0 0 5px black'
+ penzl.style.backgroundColor='rgba(181,181,181,0.4)'
+ if(localStorage.getItem('actinstr')==1){
+   filli=1
+   filler.style.backgroundColor='rgba(181,181,181,0.4)'
+    eraser.style.backgroundColor=bgcol
+    penzl.style.backgroundColor=bgcol
+}else{
+
+}
+
  let col ='black'
  let linewidth = 5;
  let isMouseDown =false
  let cords=JSON.parse(localStorage.getItem('cords')) || []
  console.log(cords)
+//  for(let i=0;i++;i<=cords.length){
+//      console.log('yes'+i)
+//     let crd =cords.shift()
+    
+//     let e={
+//         clientX: crd['0'],
+//         clientY: crd['1'],
+//         frontcolor: crd['2'],
+//         linew:crd['3'],
+//         backgroundcolor:crd['5']
+//     }
+//     ctx.lineWidth =e.linew*2
+//  ctx.strokeStyle =e.frontcolor
+//  ctx.fillStyle =e.frontcolor
+
+//  }
+
+
+
 let bgcol ='white'
 canv.style.backgroundColor = bgcol
  canv.width =window.innerWidth
@@ -279,6 +310,7 @@ function replay(){
         linew:crd['3'],
         backgroundcolor:crd['5']
     }
+    
     cords.push(crd)
     vvidtvrepl++
 if(e.clientY){
@@ -400,6 +432,10 @@ cursorColor.oninput =function(){
  ctx.fillStyle =col
 
  coldosturan=col
+ cursorColor.style.boxShadow ='0 0 5px black'
+ blue.style.boxShadow ='0 0 0px black'
+ green.style.boxShadow ='0 0 0px black'
+ red.style.boxShadow ='0 0 0px black'
 }
 red.onclick = function(){
     col= 'red'
@@ -407,6 +443,11 @@ red.onclick = function(){
  ctx.fillStyle =col  
 
  coldosturan=col
+ red.style.boxShadow ='0 0 5px black'
+ cursorColor.style.boxShadow ='0 0 0px black'
+ blue.style.boxShadow ='0 0 0px black'
+ green.style.boxShadow ='0 0 0px black'
+
 }
 green.onclick = function(){
     col= 'green'
@@ -414,6 +455,10 @@ green.onclick = function(){
  ctx.fillStyle =col  
  
  coldosturan=col
+ green.style.boxShadow ='0 0 5px black'
+ red.style.boxShadow ='0 0 0px black'
+ cursorColor.style.boxShadow ='0 0 0px black'
+ blue.style.boxShadow ='0 0 0px black'
 }
 blue.onclick = function(){
     col= 'blue'
@@ -421,6 +466,10 @@ blue.onclick = function(){
  ctx.fillStyle =col  
 
  coldosturan=col
+ blue.style.boxShadow ='0 0 5px black'
+ green.style.boxShadow ='0 0 0px black'
+ red.style.boxShadow ='0 0 0px black'
+ cursorColor.style.boxShadow ='0 0 0px black'
 }
 range.onchange = function(){
     linewidth = range.value
@@ -451,6 +500,10 @@ penzl.onclick = function(){
     col=coldosturan
     ctx.strokeStyle =col
  ctx.fillStyle =col 
+ penzl.style.backgroundColor='rgba(181,181,181,0.4)'
+ filler.style.backgroundColor=bgcol
+ eraser.style.backgroundColor=bgcol
+ localStorage.setItem('actinstr','0')
  
 }
 
@@ -460,10 +513,19 @@ eraser.onclick = function(){
     col='white'
     ctx.strokeStyle =col
  ctx.fillStyle =col
+ eraser.style.backgroundColor='rgba(181,181,181,0.4)'
+ filler.style.backgroundColor=bgcol
+ penzl.style.backgroundColor=bgcol
+ localStorage.setItem('actinstr','0')
 }
 filler.onclick = function(){
     filli=1;
+    filler.style.backgroundColor='rgba(181,181,181,0.4)'
+    eraser.style.backgroundColor=bgcol
+    penzl.style.backgroundColor=bgcol
+    localStorage.setItem('actinstr','1')
 }
+
 canv.onclick =  function(){
     if(filli==1){
         console.log(coldosturan)
